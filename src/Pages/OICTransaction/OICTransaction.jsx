@@ -291,6 +291,12 @@ function OICDashboard() {
         return "bg-gray-100 text-gray-800";
     }
   };
+  const shouldShowStatusCards = () => {
+    if (user?.role === "CASHIER" && activeTab === "completed-clearances") {
+      return false;
+    }
+    return true;
+  };
 
   useEffect(() => {
     if (user && rolesDontNeedLetter.includes(user?.role)) {
@@ -394,10 +400,14 @@ function OICDashboard() {
                   E-Clearances
                 </button>
                 <button
-                  className={`py-2 px-4 ${user?.role !== 'CASHIER' ? 'hidden' : ''} ${
-                    activeTab === 'completed-clearances' ? 'border-b-2 border-green-800 text-green-800' : 'text-gray-500'
+                  className={`py-2 px-4 ${
+                    user?.role !== "CASHIER" ? "hidden" : ""
+                  } ${
+                    activeTab === "completed-clearances"
+                      ? "border-b-2 border-green-800 text-green-800"
+                      : "text-gray-500"
                   }`}
-                  onClick={() => setActiveTab('completed-clearances')}
+                  onClick={() => setActiveTab("completed-clearances")}
                 >
                   Completed Clearances
                 </button>
@@ -405,39 +415,40 @@ function OICDashboard() {
             </div>
 
             {/* Status Cards and Filters */}
-            <div className="px-10 flex justify-between items-start">
-              <div className="flex space-x-4">
-                <StatusCard
-                  // count={pendingCountForLetter}
-                  count={
-                    activeTab === "letters"
-                      ? pendingCountForLetter
-                      : pendingCountForClearance
-                  }
-                  title={activeTab === "letters" ? "FOR EVALUATION" : "PENDING"}
-                  icon={PendingIcon}
-                  onClick={() =>
-                    handleCardClick(
-                      activeTab === "letters" ? "For Evaluation" : "In Progress"
-                    )
-                  }
-                  isActive={
-                    selectedStatus ===
-                    (activeTab === "letters" ? "For Evaluation" : "In Progress")
-                  }
-                />
-                <StatusCard
-                  count={
-                    activeTab === "letters"
-                      ? approvedCountForLetter
-                      : approvedCountForClearance
-                  }
-                  title={activeTab === "letters" ? "COMPLETED" : "COMPLETED"}
-                  icon={ApprovedIcon}
-                  onClick={() => handleCardClick("Approved")}
-                  isActive={selectedStatus === "Approved"}
-                />
-              </div>
+            {shouldShowStatusCards() && (
+              <div className="px-10 flex justify-between items-start">
+                <div className="flex space-x-4">
+                  <StatusCard
+                    count={
+                      activeTab === "letters"
+                        ? pendingCountForLetter
+                        : pendingCountForClearance
+                    }
+                    title={activeTab === "letters" ? "FOR EVALUATION" : "PENDING"}
+                    icon={PendingIcon}
+                    onClick={() =>
+                      handleCardClick(
+                        activeTab === "letters" ? "For Evaluation" : "In Progress"
+                      )
+                    }
+                    isActive={
+                      selectedStatus ===
+                      (activeTab === "letters" ? "For Evaluation" : "In Progress")
+                    }
+                  />
+                  <StatusCard
+                    count={
+                      activeTab === "letters"
+                        ? approvedCountForLetter
+                        : approvedCountForClearance
+                    }
+                    title={activeTab === "letters" ? "COMPLETED" : "COMPLETED"}
+                    icon={ApprovedIcon}
+                    onClick={() => handleCardClick("Approved")}
+                    isActive={selectedStatus === "Approved"}
+                  />
+                </div>
+
 
               {activeTab === "letters" && (
                 <div className="flex space-x-4">
@@ -520,7 +531,7 @@ function OICDashboard() {
                 </>
               )}
             </div>
-
+            )}
             {/* Table Section */}
             <div className="mx-10 mt-10">
               <div className="bg-white rounded-lg shadow overflow-hidden">
@@ -552,73 +563,83 @@ function OICDashboard() {
                 {/* Table Content */}
                 <div className="overflow-x-auto">
                   <table className="w-full">
-                  <thead>
-  <tr className="bg-gray-50 border-b">
-    {activeTab === "letters" ? (
-      <>
-        <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase">
-          Date Requested
-        </th>
-        <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase">
-          Type Of Letter
-        </th>
-        <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase">
-          Name of Transaction
-        </th>
-        <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase">
-          Requested By
-        </th>
-        <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase">
-          Transaction Status
-        </th>
-        <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase">
-          Notes
-        </th>
-        <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase">
-          Date and Time Completed
-        </th>
-        <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase">
-          Action
-        </th>
-      </>
-    ) : activeTab === "clearances" ? (
-      <>
-        <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase">
-          Date Requested
-        </th>
-        <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase">
-          Type Of Clearance
-        </th>
-        <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase">
-          Name
-        </th>
-        <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase">
-          Course & Year
-        </th>
-        <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase">
-          Status
-        </th>
-        <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase">
-          Notes
-        </th>
-        <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase">
-          Date Completed
-        </th>
-        <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase">
-          Action
-        </th>
-      </>
-    ) : (
-      <>
-        <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase">Date Completed</th>
-        <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
-        <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase">Course & Year</th>
-        <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-        <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase">Action</th>
-      </>
-    )}
-  </tr>
-</thead>
+                    <thead>
+                      <tr className="bg-gray-50 border-b">
+                        {activeTab === "letters" ? (
+                          <>
+                            <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase">
+                              Date Requested
+                            </th>
+                            <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase">
+                              Type Of Letter
+                            </th>
+                            <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase">
+                              Name of Transaction
+                            </th>
+                            <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase">
+                              Requested By
+                            </th>
+                            <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase">
+                              Transaction Status
+                            </th>
+                            <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase">
+                              Notes
+                            </th>
+                            <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase">
+                              Date and Time Completed
+                            </th>
+                            <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase">
+                              Action
+                            </th>
+                          </>
+                        ) : activeTab === "clearances" ? (
+                          <>
+                            <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase">
+                              Date Requested
+                            </th>
+                            <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase">
+                              Type Of Clearance
+                            </th>
+                            <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase">
+                              Name
+                            </th>
+                            <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase">
+                              Course & Year
+                            </th>
+                            <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase">
+                              Status
+                            </th>
+                            <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase">
+                              Notes
+                            </th>
+                            <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase">
+                              Date Completed
+                            </th>
+                            <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase">
+                              Action
+                            </th>
+                          </>
+                        ) : (
+                          <>
+                            <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase">
+                              Date Completed
+                            </th>
+                            <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase">
+                              Name
+                            </th>
+                            <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase">
+                              Course & Year
+                            </th>
+                            <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase">
+                              Status
+                            </th>
+                            <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase">
+                              Action
+                            </th>
+                          </>
+                        )}
+                      </tr>
+                    </thead>
                     <tbody className="divide-y divide-gray-200">
                       {activeTab === "letters" ? (
                         <>
@@ -750,29 +771,43 @@ function OICDashboard() {
                       ) : (
                         <>
                           {clearances
-                      .filter(item => item.status === "COMPLETED")
-                      .map((item, index) => (
-                        <tr key={index} className="hover:bg-gray-50">
-                          <td className="p-3">{item.last_modified}</td>
-                          <td className="p-3">{item.user?.first_name} {item.user?.middle_name[0]}. {item.user?.lastname}</td>
-                          <td className="p-3">{item.type === "STUDENT_CLEARANCE" ? item.user?.course?.short_name + " - " + item.user?.year_level : "N/A"}</td>
-                          <td className="p-3">
-                            <span className={`px-2 py-1 rounded-full text-xs ${
-                              item.is_released ? 'bg-green-500 text-white' : 'bg-blue-500 text-white'
-                            }`}>
-                              {item.is_released ? 'Released' : 'Pending'}
-                            </span>
-                          </td>
-                          <td className="p-3">
-                            <button
-                              className="bg-green-800 text-white text-sm px-4 py-2 rounded hover:bg-green-900 disabled:bg-gray-400"
-                              onClick={() => handleRelease(item.id)}
-                              disabled={item.is_released}
-                            >
-                              Release
-                            </button>
-                          </td>
-                        </tr>
+                            .filter((item) => item.status === "COMPLETED")
+                            .map((item, index) => (
+                              <tr key={index} className="hover:bg-gray-50">
+                                <td className="p-3">{item.last_modified}</td>
+                                <td className="p-3">
+                                  {item.user?.first_name}{" "}
+                                  {item.user?.middle_name[0]}.{" "}
+                                  {item.user?.lastname}
+                                </td>
+                                <td className="p-3">
+                                  {item.type === "STUDENT_CLEARANCE"
+                                    ? item.user?.course?.short_name +
+                                      " - " +
+                                      item.user?.year_level
+                                    : "N/A"}
+                                </td>
+                                <td className="p-3">
+                                  <span
+                                    className={`px-2 py-1 rounded-full text-xs ${
+                                      item.is_released
+                                        ? "bg-green-500 text-white"
+                                        : "bg-blue-500 text-white"
+                                    }`}
+                                  >
+                                    {item.is_released ? "Released" : "Pending"}
+                                  </span>
+                                </td>
+                                <td className="p-3">
+                                  <button
+                                    className="bg-green-800 text-white text-sm px-4 py-2 rounded hover:bg-green-900 disabled:bg-gray-400"
+                                    onClick={() => handleRelease(item.id)}
+                                    disabled={item.is_released}
+                                  >
+                                    Release
+                                  </button>
+                                </td>
+                              </tr>
                             ))}
                         </>
                       )}
