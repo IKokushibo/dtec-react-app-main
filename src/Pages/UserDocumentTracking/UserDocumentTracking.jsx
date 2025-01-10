@@ -35,10 +35,10 @@ function DocumentTracking() {
 
   const handleSubmit = () => {
     switch (selectedTransaction) {
-      case 'Implementation Letter (In-Campus)':
+      case 'Implementation Program (In-Campus)':
         navigate('/user/implementation-letter-ic');
         break;
-      case 'Implementation Letter (Off-Campus)':
+      case 'Implementation Program (Off-Campus)':
         navigate('/user/implementation-letter-oc');
         break;
       case 'Communication Letter (In-Campus)':
@@ -144,8 +144,8 @@ function DocumentTracking() {
                 className="border border-gray-300 p-2 rounded-lg w-full"
               >
                 <option value="">Select an option...</option>
-                <option value="Implementation Letter (In-Campus)">Implementation Letter (In-Campus)</option>
-                <option value="Implementation Letter (Off-Campus)">Implementation Letter (Off-Campus)</option>
+                <option value="Implementation Program (In-Campus)">Implementation Program (In-Campus)</option>
+                <option value="Implementation Program (Off-Campus)">Implementation Program (Off-Campus)</option>
                 <option value="Communication Letter (In-Campus)">Communication Letter (In-Campus)</option>
                 <option value="Communication Letter (Off-Campus)">Communication Letter (Off-Campus)</option>
                 <option value="Budget Proposal">Budget Proposal</option>
