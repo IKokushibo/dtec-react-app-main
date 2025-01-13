@@ -75,6 +75,9 @@ const rolesNoNeedOrganization = [
   "VPAF",
   "VPA",
   "MULTIMEDIA",
+  "AUXILIARY_SERVICE_HEAD",
+  "PPLO",
+  "CHAPEL",
 ];
 
 const labInChargeRoles = [
@@ -772,7 +775,7 @@ function UserList() {
                   </div>
                   <div className="mb-4">
                     <label className="block text-sm font-medium mb-1">
-                      User ID *
+                      {newUser.role === "STUDENT" || newUser.role === "STUDENT_OFFICER"? "Student ID" : "Employment ID"}
                     </label>
                     <input
                       type="text"
@@ -1150,7 +1153,7 @@ function UserList() {
                   </div>
                   <div className="mb-4">
                     <label className="block text-sm font-medium mb-1">
-                      User ID *
+                    {newUser.role === "STUDENT" || newUser.role === "STUDENT_OFFICER"? "Student ID" : "Employment ID"}
                     </label>
                     <input
                       type="text"

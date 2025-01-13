@@ -114,6 +114,7 @@ function PermitEnterCampusForm() {
       navigate(navigateRouteByRole(user));
     }
   }, [dispatch, user, status]);
+ 
 
   return (
     <>
@@ -149,7 +150,8 @@ function PermitEnterCampusForm() {
                   <input
                     type="text"
                     className="w-full border-gray-300 border-2 p-2 rounded-md"
-                    value={requisitioner}
+                    disabled
+                    defaultValue= {user?.first_name + " " + user?.middle_name + " " + user?.lastname}
                     onChange={(e) => setRequisitioner(e.target.value)}
                   />
                 </div>
@@ -159,7 +161,8 @@ function PermitEnterCampusForm() {
                   <input
                     type="text"
                     className="w-full border-gray-300 border-2 p-2 rounded-md"
-                    value={club}
+                    disabled
+                    defaultValue={user?.officer_at}
                     onChange={(e) => setClub(e.target.value)}
                   />
                 </div>
@@ -169,7 +172,8 @@ function PermitEnterCampusForm() {
                   <input
                     type="text"
                     className="w-full border-gray-300 border-2 p-2 rounded-md"
-                    value={position}
+                    disabled
+                    defaultValue={user?.role}
                     onChange={(e) => setPosition(e.target.value)}
                   />
                 </div>
@@ -261,7 +265,7 @@ function PermitEnterCampusForm() {
                       defaultValue={user?.first_name + " " + user?.middle_name + " " + user?.lastname}
                       disabled
                     />
-                    <p className="text-sm mt-2">MAYOR, BLC, A.Y. 2024-2025</p>
+                    <p className="text-sm mt-2">MAYOR, {user?.officer_at} , A.Y. 2024-2025</p>
                   </div>
                 </div>
 

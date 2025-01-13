@@ -147,7 +147,6 @@ function ImplementationProgramForm() {
       navigate(navigateRouteByRole(user));
     }
   }, [dispatch, user, status]);
-
   return (
     <>
       {status === "Succeeded" && (

@@ -117,7 +117,8 @@ function UseFacilitiesForm() {
               <input
                 type="text"
                 className="w-full border-gray-300 border-2 p-2 rounded-md"
-                value={requisitioner}
+                disabled
+                defaultValue= {user?.first_name + " " + user?.middle_name + " " + user?.lastname}
                 onChange={(e) => setRequisitioner(e.target.value)}
               />
             </div>
@@ -127,7 +128,8 @@ function UseFacilitiesForm() {
               <input
                 type="text"
                 className="w-full border-gray-300 border-2 p-2 rounded-md"
-                value={club}
+                disabled
+                defaultValue={user?.officer_at}
                 onChange={(e) => setClub(e.target.value)}
               />
             </div>
@@ -137,7 +139,8 @@ function UseFacilitiesForm() {
               <input
                 type="text"
                 className="w-full border-gray-300 border-2 p-2 rounded-md"
-                value={position}
+                disabled
+                defaultValue={user?.role}
                 onChange={(e) => setPosition(e.target.value)}
               />
             </div>
