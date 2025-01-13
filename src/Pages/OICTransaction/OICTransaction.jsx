@@ -152,19 +152,6 @@ function OICDashboard() {
   const currentItems = filteredLetter.slice(indexOfFirstItem, indexOfLastItem);
   const totalPages = Math.ceil(filteredLetter.length / entriesPerPage);
 
-  // // Counts for status cards
-  // const pendingCount = currentData.filter(item =>
-  //   activeTab === 'letters' ?
-  //     item.transactionStatus === "For Evaluation" :
-  //     item.clearance_signoffs?.filter((item) => item.role === user?.role)[0]?.status === "IN_PROGRESS"
-  // ).length;
-
-  // const approvedCount = currentData.filter(item =>
-  //   activeTab === 'letters' ?
-  //     item.transactionStatus === "Approved" :
-  //     item.clearance_signoffs?.filter((item) => item.role === user?.role)[0]?.status === "PENDING"
-  // ).length;
-
   const pendingCountForLetter = letters?.filter((t) =>
     activeTab === "letters"
       ? t.signed_people?.filter((sp) => sp.role === user?.role)[0]?.status ===
@@ -182,7 +169,6 @@ function OICDashboard() {
     (c) => activeTab === "clearances" && c.status === "COMPLETED"
   ).length;
 
-  console.log(letters);
 
   // Event handlers
   const handleCardClick = (status) => {
@@ -298,6 +284,21 @@ function OICDashboard() {
     return true;
   };
 
+  const handleRelease = async (id) => {
+    try {
+
+      const response = await axios.post(`/clearances/students/completed-clearances/${id}`);
+      if (response.status === 200) {
+        toggle();
+        dispatch(showModal({ message: response.data?.message }));
+        
+      }
+    } catch (error) {
+      
+    }
+  }
+
+
   useEffect(() => {
     if (user && rolesDontNeedLetter.includes(user?.role)) {
       setActiveTab("clearances");
@@ -346,6 +347,19 @@ function OICDashboard() {
     }
   }, [dispatch, user, status]);
 
+  useEffect (() =>{
+    const fetchCompletedClearances = async () => {
+      try {
+        const response = await axios.get(`/clearances/students/completed-clearances`);
+        setCompletedClearances(response?.data?.data);
+      } catch (error) {
+        
+      }
+    }
+    fetchCompletedClearances();
+  }, [isMounted]);
+
+  
   return (
     <>
       {status === "Succeeded" && (
@@ -705,7 +719,7 @@ function OICDashboard() {
                         </>
                       ) : activeTab === "clearances" ? (
                         <>
-                          {filteredClearance.map((item, index) => (
+                          {filteredClearance?.map((item, index) => (
                             <tr key={index} className="hover:bg-gray-50">
                               <td className="p-3">
                                 {item.date_of_student_signature}
@@ -770,9 +784,8 @@ function OICDashboard() {
                         </>
                       ) : (
                         <>
-                          {clearances
-                            .filter((item) => item.status === "COMPLETED")
-                            .map((item, index) => (
+                          {completedClearances                            
+                            ?.map((item, index) => (
                               <tr key={index} className="hover:bg-gray-50">
                                 <td className="p-3">{item.last_modified}</td>
                                 <td className="p-3">
@@ -781,11 +794,9 @@ function OICDashboard() {
                                   {item.user?.lastname}
                                 </td>
                                 <td className="p-3">
-                                  {item.type === "STUDENT_CLEARANCE"
-                                    ? item.user?.course?.short_name +
+                                  {item.user?.course?.short_name +
                                       " - " +
-                                      item.user?.year_level
-                                    : "N/A"}
+                                      item.user?.year_level}
                                 </td>
                                 <td className="p-3">
                                   <span
