@@ -32,14 +32,16 @@ function PermitEnterCampusForm() {
     const currentDate = new Date();
     const sevenDaysFromNow = new Date();
     sevenDaysFromNow.setDate(currentDate.getDate() + 7);
-
+  
+    selectedDate.setHours(0, 0, 0, 0);
+  
     if (selectedDate > sevenDaysFromNow) {
       setDate(selectedDate);
     } else {
       alert("Please select a date at least 7 days from today");
     }
   };
-
+   
   const handleTextAreaKeyDown = (e, setValue, currentValue) => {
     if (e.key === "Enter") {
       e.preventDefault();
@@ -76,22 +78,35 @@ function PermitEnterCampusForm() {
     navigate("/user/document-tracking");
   };
 
-  const handleSubmit = async () => {
+  const fetchSignature = async() => {
     try {
-      const response = await axios.post("/permit-enter-campus/request", {
-        requisitioner,
-        club,
-        position,
-        activity_purpose: activityPurpose,
-        date: date.toISOString(),
-        time_from: timeFrom,
-        time_to: timeTo,
-        participants,
-        signature: signaturePreview,
-      });
+      const response = await axios.get("/users/get-sm-e-signature");
+      setSignaturePreview(response.data?.data);
+    } catch (error) {
       
+    }
+
+  };
+
+  const handleSubmit = async () => {
+    if (!activityPurpose || !date || !timeFrom || !timeTo || !participants || !signaturePreview) {
+      dispatch(showModal({ message: "Please fill in all required fields" }));
+      return;
+    }
+
+    try {
+      const formattedDate = date.toLocaleDateString('en-CA'); 
+        const response = await axios.post("/permit-to-enters/request-permit-to-enter", {
+                activity: activityPurpose,
+                date: formattedDate,
+                time_from: timeFrom,
+                time_to: timeTo,
+                participants,
+                signature: signaturePreview
+              });  
+              // console.log(response);  
       if (response.status === 201) {
-        dispatch(showModal({ message: response.data?.message }));
+        dispatch(showModal({ message: response.data?.message || "Permit request submitted successfully!" }));
         setTimeout(() => {
           navigate("/user/document-tracking");
           dispatch(hideModal());
@@ -99,9 +114,7 @@ function PermitEnterCampusForm() {
         }, 2000);
       }
     } catch (error) {
-      if (error.status === 400 || error.status === 403) {
-        dispatch(showModal({ message: error.response?.data?.message }));
-      }
+      dispatch(showModal({ message: error.response?.data?.message || "An error occurred while submitting the request" }));
     }
   };
 
@@ -241,7 +254,7 @@ function PermitEnterCampusForm() {
                     <p className="font-semibold">Requested By:</p>
                     <div className="mt-2">
                       <button
-                        onClick={() => setSignaturePreview(TorreseSig)}
+                        onClick={() => fetchSignature()}
                         className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md flex items-center justify-center gap-2 mx-auto"
                       >
                         <FaFingerprint /> Attach Signature
@@ -286,7 +299,7 @@ function PermitEnterCampusForm() {
                 <div className="mt-6 text-center">
                   <p className="font-semibold">Approved by:</p>
                   <div className="mt-4">
-                    <p className="font-semibold">Approved by:</p>
+         
                     <p className="font-bold mt-2 font-bold">{user?.office_head}</p>
                     <p>Office Head, CDSO</p>
                  </div>

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { FaPlus, FaTrash, FaFingerprint } from 'react-icons/fa';
-import TorreseSig from '../../assets/images/torresesig.png';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import PrimaryNavBar from "../../Components/NavBar/PrimaryNavBar";
@@ -16,6 +15,7 @@ function BudgetProposalLetter() {
   const { user, status } = useSelector((state) => state.user);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [signaturePreview, setSignaturePreview] = useState("");
 
   const [formData, setFormData] = useState({
     name: '',
@@ -40,16 +40,29 @@ function BudgetProposalLetter() {
     }
   };
 
+  const fetchSignature = async() => {
+    try {
+      const response = await axios.get("/users/get-sm-e-signature");
+      const signatureData = response.data?.data;
+      setSignaturePreview(signatureData);
+      setFormData({ ...formData, student_officer_signature: signatureData });
+    } catch (error) {
+      dispatch(showModal({ message: 'Failed to fetch signature' }));
+    }
+  };
+
   const handleSignatureChange = (e) => {
     const file = e.target.files[0];
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setFormData({ ...formData, student_officer_signature: reader.result })
+        setFormData({ ...formData, student_officer_signature: reader.result });
+        setSignaturePreview(reader.result);
       };
       reader.readAsDataURL(file);
     } else {
-      setFormData({ ...formData, student_officer_signature: null })
+      setFormData({ ...formData, student_officer_signature: null });
+      setSignaturePreview("");
     }
   };
 
@@ -87,6 +100,7 @@ function BudgetProposalLetter() {
       expected_expenses: [{ name: '', amount: '' }],
       student_officer_signature: ""
     });
+    setSignaturePreview("");
   }
 
   const handleSave = async () => {
@@ -106,6 +120,7 @@ function BudgetProposalLetter() {
       }
     }
   }
+
   const handleCancel = () => {
     navigate("/user/document-tracking")
   }
@@ -119,7 +134,6 @@ function BudgetProposalLetter() {
       navigate(navigateRouteByRole(user));
     }
   }, [dispatch, user, status]);
-
 
   return (
     <>
@@ -244,16 +258,16 @@ function BudgetProposalLetter() {
                         <p className="font-bold">Prepared by:</p>
                         <div className="mt-4">
                           <button
-                            onClick={() => setFormData({ ...formData, student_officer_signature: TorreseSig })}
+                            onClick={fetchSignature}
                             className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md flex items-center justify-center gap-2 mx-auto"
                           >
                             <FaFingerprint /> Attach Signature
                           </button>
-                          {formData.student_officer_signature && (
+                          {signaturePreview && (
                             <div className="mb-4">
                               <p className="text-sm font-medium mb-2">Signature Preview:</p>
                               <img
-                                src={formData.student_officer_signature}
+                                src={signaturePreview}
                                 alt="Mayor Signature"
                                 className="max-h-20 border rounded p-2"
                               />
@@ -272,13 +286,6 @@ function BudgetProposalLetter() {
                     <div>
                       <p className="font-bold">Noted by:</p>
                       <div className="mt-4">
-                        <label className="block text-sm font-medium mb-2">Upload Signature:</label>
-                        <input
-                          type="file"
-                          accept="image/*"
-                          className="w-full border p-2 rounded mb-2"
-                          disabled
-                        />
                         <input
                           type="text"
                           className="w-full border-b-2 font-bold"
@@ -294,17 +301,17 @@ function BudgetProposalLetter() {
                   {/* Additional Signatures */}
                   <div className="grid grid-cols-2 gap-8 mt-8">
                     <div>
-                      <p className="font-bold mb-2 font-bold">{user?.dsa}</p>
+                      <p className="font-bold mb-2">{user?.dsa}</p>
                       <p>Director of Student Affairs</p>
                     </div>
                     <div>
-                      <p className="font-bold mb-2 font-bold">{user?.finance}</p>
+                      <p className="font-bold mb-2">{user?.finance}</p>
                       <p>Finance Officer</p>
                     </div>
                   </div>
 
                   <div className="mt-8">
-                    <p className="font-bold mb-2 font-bold">Approved by:</p>
+                    <p className="font-bold mb-2">Approved by:</p>
                     <p className="font-bold">{user?.president}</p>
                     <p>President</p>
                   </div>

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { FaFingerprint } from 'react-icons/fa';
-import TorreseSig from '../../assets/images/torresesig.png';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchUser } from '../../states/slices/UserSlicer';
 import { hideModal, showModal } from '../../states/slices/ModalSlicer';
@@ -15,8 +14,6 @@ function CommunicationLetter() {
   const [signaturePreview, setSignaturePreview] = useState("");
   const [letterContent, setLetterContent] = useState('');
   const [selectedDate, setSelectedDate] = useState("");
-
-
   const { user, status } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -35,20 +32,17 @@ function CommunicationLetter() {
     }
   };
 
-  
 
-  const handleSignatureChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setSignaturePreview(reader.result);
-      };
-      reader.readAsDataURL(file);
-    } else {
-      setSignaturePreview(null);
+  const fetchSignature = async() => {
+    try {
+      const response = await axios.get("/users/get-sm-e-signature");
+      setSignaturePreview(response.data?.data);
+    } catch (error) {
+      
     }
+
   };
+
 
   const handleContentChange = (e) => {
     setLetterContent(e.target.value);
@@ -168,7 +162,7 @@ function CommunicationLetter() {
                         <p className="font-semibold">Prepared by:</p>
                         <div className="mt-2">
                           <button
-                            onClick={() => setSignaturePreview(TorreseSig)}
+                            onClick={() => fetchSignature()}
                             className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md flex items-center justify-center gap-2 mx-auto"
                           >
                             <FaFingerprint /> Attach Signature

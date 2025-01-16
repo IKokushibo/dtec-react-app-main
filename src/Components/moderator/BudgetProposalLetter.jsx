@@ -5,19 +5,30 @@ import axios from "../../api/AxiosConfig";
 import { showModal } from '../../states/slices/ModalSlicer';
 import { getSignature } from '../../services/LetterUtil';
 import { FaFingerprint } from 'react-icons/fa';
-import TorreseSig from '../../assets/images/torresesig.png';
 
-function BudgetProposalLetter({ letter, signaturePreview, onSignatureChange, setSignedPeople }) {
+function BudgetProposalLetter({ letter, setSignedPeople }) {
   const [isLoading, setIsLoading] = useState(false);
   const [budgetProposal, setBudgetProposal] = useState(null);
   const { user } = useSelector((state) => state.user);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [signaturePreview, setSignaturePreview] = useState("");
 
   if (!user) {
     navigate("/user/moderator-transaction")
     return;
   }
+
+
+  const fetchSignature = async() => {
+    try {
+      const response = await axios.get("/users/get-sm-e-signature");
+      setSignaturePreview(response.data?.data);
+    } catch (error) {
+      
+    }
+
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -120,7 +131,7 @@ function BudgetProposalLetter({ letter, signaturePreview, onSignatureChange, set
           </div>
 
           {/* Signatures Section */}
-          <div className={`mt-6 text-center ${user?.role !== 'STUDENT_OFFICER' ? 'hidden' : ''}`}>
+          {/* <div className={`mt-6 text-center ${user?.role !== 'STUDENT_OFFICER' ? 'hidden' : ''}`}>
             <p className="font-semibold">Prepared by:</p>
             <img
               alt="Mayor's Signature"
@@ -130,7 +141,7 @@ function BudgetProposalLetter({ letter, signaturePreview, onSignatureChange, set
             />
             <p className="mt-2 font-bold">{budgetProposal.student_officer}</p>
             <p className="text-sm mt-2">Mayor, BLC A.Y. 2023-2024</p>
-          </div>
+          </div> */}
 
           <div className="mt-6">
             <div className="text-center">
@@ -145,7 +156,7 @@ function BudgetProposalLetter({ letter, signaturePreview, onSignatureChange, set
               ) : (
                 <>
                   <button
-                    onClick={() => onSignatureChange({ target: { files: [TorreseSig] } })}
+                    onClick={() => fetchSignature()}
                     className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md flex items-center justify-center gap-2 mx-auto"
                     disabled={user.role !== "MODERATOR"}
                   >

@@ -94,7 +94,7 @@ function ImplementationLetterOffCampus({
 
           <div>
             <label className="block font-semibold mb-2">
-              IV. DATE AND PLACE OF IMPLEMENTATION
+              IV. DATE AND TIME OF IMPLEMENTATION
             </label>
             <div className="w-full border-gray-300 border-2 p-2 rounded-md bg-gray-50">
               {implementationLetter.date_time}
@@ -162,7 +162,7 @@ function ImplementationLetterOffCampus({
             <p className="mt-2 font-bold">
               {implementationLetter.student_officer}
             </p>
-            <p className="text-sm mt-2">Mayor, BLC A.Y. 2023-2024</p>
+            <p className="text-sm mt-2">Mayor, {user?.officer_at} A.Y. 2023-2024</p>
           </div>
 
           <div className="mt-6">

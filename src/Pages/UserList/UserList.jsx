@@ -42,6 +42,9 @@ const roles = [
   { label: "VPAF", value: "VPAF" },
   { label: "VPA", value: "VPA" },
   { label: "Multimedia", value: "MULTIMEDIA" },
+  { label: "Auxiliary Service Head", value: "AUXILIARY_SERVICE_HEAD" },
+  { label: "PPLO", value: "PPLO" },
+  { label: "Chapel", value: "CHAPEL" },
 
   { label: "Science Lab", value: "SCIENCE_LAB" },
   { label: "Computer Lab", value: "COMPUTER_SCIENCE_LAB" },

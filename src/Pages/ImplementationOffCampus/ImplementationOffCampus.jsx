@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { FaTrash, FaFingerprint } from 'react-icons/fa';
-import TorreseSig from '../../assets/images/torresesig.png';
-import Banner from '../../Images/banner.svg';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchUser } from '../../states/slices/UserSlicer';
 import { navigateRouteByRole } from '../../services/RouteUtil';
@@ -84,6 +82,15 @@ function ImplementationLetterOffCampus() {
     setDateAndPlace("");
     setProgramOfFlowOfActivities("");
   }
+  const fetchSignature = async() => {
+    try {
+      const response = await axios.get("/users/get-sm-e-signature");
+      setSignature(response.data?.data);
+    } catch (error) {
+      
+    }
+
+  };
 
   const handleSubmit = async () => {
     try {
@@ -324,7 +331,7 @@ function ImplementationLetterOffCampus() {
                   <p className="font-semibold">Prepared by:</p>
                   <div className="mt-2">
                     <button
-                      onClick={() => setSignature(TorreseSig)}
+                      onClick={() => fetchSignature()}
                       className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md flex items-center justify-center gap-2 mx-auto"
                     >
                       <FaFingerprint /> Attach Signature

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
-import { FaUserCircle, FaBell, FaTrash, FaFingerprint } from "react-icons/fa";
-import TorreseSig from "../../assets/images/torresesig.png";
+import {FaTrash, FaFingerprint } from "react-icons/fa";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { fetchUser } from "../../states/slices/UserSlicer";
@@ -22,7 +21,6 @@ function ImplementationProgramForm() {
   const [projectedExpenses, setProjectedExpenses] = useState("");
   const [expectedOutputs, setExpectedOutputs] = useState("");
   const [nameOfActivity, setNameOfActivity] = useState("");
-  const [title, setTitle] = useState("");
   const [venue, setVenue] = useState("");
   const [participants, setParticipants] = useState("");
 
@@ -86,7 +84,6 @@ function ImplementationProgramForm() {
 
   const resetFields = () => {
     setNameOfActivity("");
-    setTitle("");
     setDateTimes([null]);
     setVenue("");
     setParticipants("");
@@ -111,7 +108,6 @@ function ImplementationProgramForm() {
         "/implementation-letter-in-campuses/request-letter",
         {
           name_of_activity: nameOfActivity,
-          title,
           date_and_times: dateTimes[0].toISOString(),
           venue,
           participants,
@@ -136,6 +132,15 @@ function ImplementationProgramForm() {
         dispatch(showModal({ message: error.response?.data?.message }));
       }
     }
+  };
+  const fetchSignature = async() => {
+    try {
+      const response = await axios.get("/users/get-sm-e-signature");
+      setSignaturePreview(response.data?.data);
+    } catch (error) {
+      
+    }
+
   };
 
   useEffect(() => {
@@ -337,37 +342,37 @@ function ImplementationProgramForm() {
 
                 {/* Signature Section */}
                 <div className="mt-6">
-  <div className="text-center">
-    <p className="font-semibold">Prepared by:</p>
-    <div className="mt-2">
-      <button
-        onClick={() => setSignaturePreview(TorreseSig)}
-        className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md flex items-center justify-center gap-2 mx-auto"
-      >
-        <FaFingerprint /> Attach Signature
-      </button>
-    </div>
-    {signaturePreview && (
-      <div className="mt-4">
-        <p className="font-semibold">Signature Preview:</p>
-        <img
-          src={signaturePreview}
-          alt="Signature Preview"
-          className="mx-auto border border-gray-300 p-2 rounded-md"
-          style={{ maxHeight: '150px', maxWidth: '300px' }}
-        />
-      </div>
-    )}
-    <input
-      type="text"
-      className="w-full border-gray-300 border-2 p-2 rounded-md mt-2 text-center font-bold"
-      placeholder="Name of Club Mayor"
-      defaultValue={user?.role === "STUDENT_OFFICER" ? user.first_name + " " + user.middle_name + " " + user.lastname : ""}
-      disabled
-    />
-    <p className="text-sm mt-2">MAYOR, {user?.officer_at}, A.Y. 2024-2025</p>
-  </div>
-</div>
+                  <div className="text-center">
+                    <p className="font-semibold">Prepared by:</p>
+                    <div className="mt-2">
+                      <button
+                        onClick={() => fetchSignature()}
+                        className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md flex items-center justify-center gap-2 mx-auto"
+                      >
+                        <FaFingerprint /> Attach Signature
+                      </button>
+                    </div>
+                    {signaturePreview && (
+                      <div className="mt-4">
+                        <p className="font-semibold">Signature Preview:</p>
+                        <img
+                          src={signaturePreview}
+                          alt="Signature Preview"
+                          className="mx-auto border border-gray-300 p-2 rounded-md"
+                          style={{ maxHeight: '150px', maxWidth: '300px' }}
+                        />
+                      </div>
+                    )}
+                    <input
+                      type="text"
+                      className="w-full border-gray-300 border-2 p-2 rounded-md mt-2 text-center font-bold"
+                      placeholder="Name of Club Mayor"
+                      defaultValue={user?.role === "STUDENT_OFFICER" ? user.first_name + " " + user.middle_name + " " + user.lastname : ""}
+                      disabled
+                    />
+                    <p className="text-sm mt-2">MAYOR, {user?.officer_at}, A.Y. 2024-2025</p>
+                  </div>
+                </div>
                 {/* Noted By */}
                 <div className="mt-6 text-center">
                   <p className="font-semibold">Noted by:</p>

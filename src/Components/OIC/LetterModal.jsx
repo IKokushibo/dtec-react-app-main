@@ -4,6 +4,8 @@ import ImplementationLetterOffCampus from '../OIC/ImplementationLetterOffCampus'
 import CommunicationLetterInCampus from '../OIC/CommunicationLetterInCampus';
 import CommunicationLetterOffCampus from '../OIC/CommunicationLetterOffCampus';
 import BudgetProposalLetter from '../OIC/BudgetProposalLetter';
+import PermitEnterApproval from '../OIC/PermitEnterApproval';
+import UseFacilitiesFormView from '../OIC/UseFacilitiesFormView';
 import Modal from "../modal/Modal";
 import axios from "../../api/AxiosConfig";
 import { showModal } from '../../states/slices/ModalSlicer';
@@ -99,6 +101,26 @@ function LetterModal({ letter, onClose, signaturePreview, onSignatureChange, onA
             setSignaturePreview={setSignaturePreview}
           />
         );
+        case 'PERMIT_TO_ENTER':
+          return (
+            <PermitEnterApproval
+              permit={letter}
+              signaturePreview={signaturePreview}
+              onSignatureChange={onSignatureChange}
+              setSignedPeople={setSignedPeople}
+              setSignaturePreview={setSignaturePreview}
+            />
+          );
+          case 'SFEF':
+            return (
+              <UseFacilitiesFormView
+                facilities={letter}
+                signaturePreview={signaturePreview}
+                onSignatureChange={onSignatureChange}
+                setSignedPeople={setSignedPeople}
+                setSignaturePreview={setSignaturePreview}
+              />
+            );
       default:
         return <div>Unsupported letter type</div>;
     }

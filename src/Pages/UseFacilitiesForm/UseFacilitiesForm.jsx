@@ -3,11 +3,12 @@ import { Helmet } from "react-helmet";
 import { FaFingerprint, FaPlus, FaTrash } from "react-icons/fa";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import axios from "../../api/AxiosConfig";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import PrimaryNavBar from "../../Components/NavBar/PrimaryNavBar";
 import Modal from "../../Components/modal/Modal";
-import TorreseSig from "../../assets/images/torresesig.png";
+import { hideModal, showModal } from "../../states/slices/ModalSlicer";
 
 
 function UseFacilitiesForm() {
@@ -24,8 +25,15 @@ function UseFacilitiesForm() {
     { name: "", quantity: "" }
   ]);
 
-  const handleAttachSignature = () => {
-    setSignaturePreview(TorreseSig);
+  const resetFields = () => {
+    setRequisitioner("");
+    setClub("");
+    setPosition("");
+    setActivityPurpose("");
+    setDate(null);
+    setTimeFrom("");
+    setTimeTo("");
+    setSignaturePreview("");
   };
 
   const navigate = useNavigate();
@@ -43,6 +51,40 @@ function UseFacilitiesForm() {
       alert("Please select a date at least 7 days from today");
     }
   };
+
+  const fetchSignature = async() => {
+    try {
+      const response = await axios.get("/users/get-sm-e-signature");
+      setSignaturePreview(response.data?.data);
+    } catch (error) {
+      
+    }
+
+  };
+
+  const handleSubmit = async () => {
+    try {
+      const formattedDate = date.toLocaleDateString('en-CA'); 
+      const response = await axios.post("/sfefs/add", {
+        venue: venues,
+        activity: activityPurpose,
+        date: formattedDate,
+        time_from: timeFrom,
+        time_to: timeTo,
+        facilityOrEquipments: facilities,
+      });
+      // console.log(response);
+      if (response.status === 201) {
+              dispatch(showModal({ message: response.data?.message || "Permit request submitted successfully!" }));
+              setTimeout(() => {
+                navigate("/user/document-tracking");
+                dispatch(hideModal());
+                resetFields();
+              }, 2000);
+    }    } catch (error) {
+          dispatch(showModal({ message: error.response?.data?.message || "An error occurred while submitting the request" }));
+        }
+  }
 
   const handleTextAreaKeyDown = (e, setValue, currentValue) => {
     if (e.key === "Enter") {
@@ -265,7 +307,7 @@ function UseFacilitiesForm() {
                 <p className="font-semibold">Requested By:</p>
                     <div className="mt-2">
                       <button
-                        onClick={handleAttachSignature}
+                        onClick={fetchSignature}
                         className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md flex items-center justify-center gap-2 mx-auto"
                       >
                         <FaFingerprint /> Attach Signature
@@ -371,6 +413,7 @@ function UseFacilitiesForm() {
               </button>
               <button
                 className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600"
+                onClick={handleSubmit}
               >
                 Submit
               </button>
